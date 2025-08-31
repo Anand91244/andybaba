@@ -1,125 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Andy Baba Shop</title>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <style>
-    body { margin: 0; font-family: Arial, sans-serif; background: #f1f3f6; }
-    header { background: #2874f0; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
-    header h1 { margin: 0; font-size: 22px; }
-    nav a { color: white; text-decoration: none; margin: 0 10px; font-size: 14px; }
-    .products { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; padding: 20px; }
-    .card { background: white; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); padding: 15px; text-align: center; transition: 0.3s; }
-    .card:hover { transform: translateY(-5px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-    .card img { max-width: 100%; height: 180px; object-fit: cover; border-radius: 5px; }
-    .card h3 { margin: 10px 0 5px; }
-    .price { font-size: 16px; color: #388e3c; font-weight: bold; }
-    .btn { margin: 8px; padding: 8px 15px; background: #ff9f00; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-    .btn:hover { background: #fb641b; color: white; }
-    .cart, .upi { background: white; padding: 20px; margin: 20px; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-    .upi { text-align: center; background: #e0ffe0; }
-    .upi img { width: 180px; margin: 10px 0; }
-    footer { background: #172337; color: white; text-align: center; padding: 15px; margin-top: 30px; }
+    body { font-family: Arial, sans-serif; background:#f5f5f5; margin:0; }
+    h1 { text-align:center; padding:16px; }
+    .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap:16px; padding:16px; }
+    .card { background:#fff; border-radius:10px; padding:16px; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+    .btn { background:#2874f0; color:#fff; border:0; padding:10px 14px; border-radius:6px; cursor:pointer; }
+    .btn:hover { background:#1251c4; }
   </style>
 </head>
 <body>
-
-<header>
   <h1>Andy Baba Shop</h1>
-  <nav>
-    <a href="#">Home</a>
-    <a href="#products">Products</a>
-    <a href="#cart">Cart</a>
-    <a href="#contact">Contact</a>
-  </nav>
-</header>
 
-<!-- Product Grid -->
-<section id="products" class="products">
-  <div class="card">
-    <img src="book1.jpg" alt="Book">
-    <h3>Book Collection</h3>
-    <p class="price">₹199</p>
-    <button class="btn" onclick="addToCart('Book Collection',199)">Add to Cart</button>
-    <button class="btn" onclick="payProduct(199,'Book Collection')">Buy Now</button>
+  <div class="grid">
+    <div class="card">
+      <h2>Painting 1</h2>
+      <p>₹499</p>
+      <button class="btn" onclick="buy(499, 'painting1.pdf', 'Painting 1')">Buy Now</button>
+    </div>
+    <div class="card">
+      <h2>E-Notes Bundle</h2>
+      <p>₹199</p>
+      <button class="btn" onclick="buy(199, 'enotes.zip', 'E-Notes Bundle')">Buy Now</button>
+    </div>
+    <div class="card">
+      <h2>Book PDF</h2>
+      <p>₹299</p>
+      <button class="btn" onclick="buy(299, 'book.pdf', 'Book PDF')">Buy Now</button>
+    </div>
   </div>
-  <div class="card">
-    <img src="painting1.jpg" alt="Painting">
-    <h3>Painting</h3>
-    <p class="price">₹499</p>
-    <button class="btn" onclick="addToCart('Painting',499)">Add to Cart</button>
-    <button class="btn" onclick="payProduct(499,'Painting')">Buy Now</button>
-  </div>
-  <div class="card">
-    <img src="notes.jpg" alt="Notes">
-    <h3>eNotes</h3>
-    <p class="price">₹99</p>
-    <button class="btn" onclick="addToCart('eNotes',99)">Add to Cart</button>
-    <button class="btn" onclick="payProduct(99,'eNotes')">Buy Now</button>
-  </div>
-  <div class="card">
-    <img src="article.jpg" alt="Article">
-    <h3>Article</h3>
-    <p class="price">₹49</p>
-    <button class="btn" onclick="addToCart('Article',49)">Add to Cart</button>
-    <button class="btn" onclick="payProduct(49,'Article')">Buy Now</button>
-  </div>
-</section>
 
-<!-- Cart Section -->
-<div id="cart" class="cart">
-  <h2>Your Cart</h2>
-  <ul id="cart-items"></ul>
-  <h3>Total: ₹<span id="total">0</span></h3>
-  <button class="btn" onclick="payCart()">Checkout</button>
-</div>
+  <script>
+    const API_BASE = "http://localhost:5000"; // change to your deployed backend URL later
 
-<!-- Payment Section -->
-<div class="upi">
-  <h2>Checkout via UPI</h2>
-  <p>UPI ID: <strong>7205289617@jio</strong></p>
-  <p>If payment doesn’t open automatically, scan QR below:</p>
-  <img src="qr.png" alt="Scan QR to Pay">
-</div>
+    async function buy(amount, productFile, productName) {
+      // 1) Create order on backend
+      const order = await fetch(API_BASE + "/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount, productFile, productName })
+      }).then(r => r.json());
 
-<footer id="contact">
-  <p>📧 Email: a1rautaray@gmail.com | 📞 Phone: 7205289617</p>
-  <p>© 2025 Andy Baba Shop</p>
-</footer>
+      // 2) Open Razorpay checkout
+      const options = {
+        key: order.key,                  // from backend
+        amount: order.amount,            // in paise
+        currency: order.currency,
+        name: "Andy Baba",
+        description: productName,
+        order_id: order.orderId,
+        handler: async function (resp) {
+          // 3) Verify payment and get a secure download link
+          const verify = await fetch(API_BASE + "/verify-payment", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              orderId: order.orderId,
+              paymentId: resp.razorpay_payment_id,
+              signature: resp.razorpay_signature,
+              productFile
+            })
+          }).then(r => r.json());
 
-<script>
-  let cart = [];
-  let total = 0;
-
-  function addToCart(item, price) {
-    cart.push({item, price});
-    total += price;
-    updateCart();
-  }
-
-  function updateCart() {
-    let list = document.getElementById("cart-items");
-    list.innerHTML = "";
-    cart.forEach(c => {
-      let li = document.createElement("li");
-      li.textContent = c.item + " - ₹" + c.price;
-      list.appendChild(li);
-    });
-    document.getElementById("total").textContent = total;
-  }
-
-  function payCart() {
-    if (total === 0) { alert("Your cart is empty!"); return; }
-    let url = "upi://pay?pa=7205289617@jio&pn=AndyBabaShop&cu=INR&am=" + total;
-    window.location.href = url;
-  }
-
-  function payProduct(amount, name) {
-    let url = "upi://pay?pa=7205289617@jio&pn=AndyBabaShop&cu=INR&am=" + amount + "&tn=" + encodeURIComponent(name);
-    window.location.href = url;
-  }
-</script>
-
+          if (verify.success) {
+            window.location.href = API_BASE + verify.downloadUrl; // triggers download
+          } else {
+            alert("Payment verification failed.");
+          }
+        },
+        theme: { color: "#2874f0" }
+      };
+      const rzp = new Razorpay(options);
+      rzp.open();
+    }
+  </script>
 </body>
 </html>
