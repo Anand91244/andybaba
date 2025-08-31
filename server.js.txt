@@ -1,0 +1,97 @@
+// server.js
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import Razorpay from "razorpay";
+import crypto from "crypto";
+import jwt from "jsonwebtoken";
+import path from "path";
+import { fileURLToPath } from "url";
+
+dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+app.use(cors());                 // allow your frontend to call this API
+app.use(express.json());         // parse JSON bodies
+
+// Razorpay client
+const rz = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET
+});
+
+// 1) Create an order (amount in INR, product file to unlock)
+app.post("/create-order", async (req, res) => {
+  try {
+    const { amount, productFile, productName } = req.body; // amount in ₹
+    if (!amount || !productFile) return res.status(400).json({ error: "amount and productFile required" });
+
+    const order = await rz.orders.create({
+      amount: amount * 100,  // paise
+      currency: "INR",
+      notes: { productFile, productName: productName || "" }
+    });
+
+    // return order + public key for checkout
+    res.json({
+      key: process.env.RAZORPAY_KEY_ID,
+      orderId: order.id,
+      amount: order.amount,
+      currency: order.currency,
+      productFile
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Failed to create order" });
+  }
+});
+
+// 2) Verify payment signature & generate a short-lived download link
+app.post("/verify-payment", async (req, res) => {
+  const { orderId, paymentId, signature, productFile } = req.body;
+  if (!orderId || !paymentId || !signature || !productFile) {
+    return res.status(400).json({ error: "Missing fields" });
+  }
+
+  // signature = HMAC_SHA256(orderId + '|' + paymentId, RAZORPAY_KEY_SECRET)
+  const expected = crypto
+    .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+    .update(orderId + "|" + paymentId)
+    .digest("hex");
+
+  if (expected !== signature) {
+    return res.status(400).json({ success: false, message: "Invalid signature" });
+  }
+
+  // Create a 15-minute download token (no DB required)
+  const token = jwt.sign(
+    { file: productFile },
+    process.env.JWT_SECRET,
+    { expiresIn: "15m" }
+  );
+
+  return res.json({
+    success: true,
+    downloadUrl: `/download?token=${token}`
+  });
+});
+
+// 3) Serve the file only if token is valid
+app.get("/download", (req, res) => {
+  const { token } = req.query;
+  if (!token) return res.status(401).send("Missing token");
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    const safeFile = path.basename(payload.file); // prevent path traversal
+    const filePath = path.join(__dirname, "files", safeFile);
+    return res.download(filePath); // forces download
+  } catch {
+    return res.status(401).send("Invalid/expired token");
+  }
+});
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Backend running on http://localhost:${PORT}`));
