@@ -5,139 +5,121 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Andy Baba Shop</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f8f9fa;
-      color: #333;
-    }
-    header {
-      background: #222;
-      color: white;
-      padding: 1rem;
-      text-align: center;
-    }
-    .products {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      padding: 20px;
-    }
-    .card {
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      padding: 15px;
-      text-align: center;
-    }
-    .card h3 { margin-top: 0; }
-    .card img {
-      max-width: 100%;
-      border-radius: 6px;
-    }
-    .upi {
-      margin: 30px auto;
-      max-width: 400px;
-      text-align: center;
-      background: #e0ffe0;
-      padding: 20px;
-      border-radius: 8px;
-    }
-    .upi img {
-      width: 200px;
-      margin: 10px 0;
-    }
-    .upi input {
-      padding: 10px;
-      width: 80%;
-      margin-top: 10px;
-      border: 1px solid #aaa;
-      border-radius: 5px;
-    }
-    .upi button {
-      margin-top: 10px;
-      padding: 10px 20px;
-      background: #0077ff;
-      border: none;
-      border-radius: 5px;
-      color: white;
-      cursor: pointer;
-    }
-    .upi button:hover {
-      background: #0055cc;
-    }
-    footer {
-      margin-top: 30px;
-      padding: 15px;
-      background: #222;
-      color: white;
-      text-align: center;
-    }
+    body { margin: 0; font-family: Arial, sans-serif; background: #f1f3f6; }
+    header { background: #2874f0; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { margin: 0; font-size: 22px; }
+    nav a { color: white; text-decoration: none; margin: 0 10px; font-size: 14px; }
+    .products { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; padding: 20px; }
+    .card { background: white; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); padding: 15px; text-align: center; transition: 0.3s; }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+    .card img { max-width: 100%; height: 180px; object-fit: cover; border-radius: 5px; }
+    .card h3 { margin: 10px 0 5px; }
+    .price { font-size: 16px; color: #388e3c; font-weight: bold; }
+    .btn { margin: 8px; padding: 8px 15px; background: #ff9f00; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    .btn:hover { background: #fb641b; color: white; }
+    .cart, .upi { background: white; padding: 20px; margin: 20px; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+    .upi { text-align: center; background: #e0ffe0; }
+    .upi img { width: 180px; margin: 10px 0; }
+    footer { background: #172337; color: white; text-align: center; padding: 15px; margin-top: 30px; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Andy Baba Shop</h1>
-    <p>Books • Paintings • Articles • eNotes</p>
-  </header>
 
-  <!-- Products Section -->
-  <section class="products">
-    <div class="card">
-      <img src="book1.jpg" alt="Book">
-      <h3>Book Collection</h3>
-      <p>Exclusive books for learning and fun.</p>
-    </div>
-    <div class="card">
-      <img src="painting1.jpg" alt="Painting">
-      <h3>Paintings</h3>
-      <p>Handmade art and digital paintings.</p>
-    </div>
-    <div class="card">
-      <img src="notes.jpg" alt="Notes">
-      <h3>eNotes</h3>
-      <p>Study materials and quick guides.</p>
-    </div>
-    <div class="card">
-      <img src="article.jpg" alt="Article">
-      <h3>Articles</h3>
-      <p>Thoughts, knowledge and inspiration.</p>
-    </div>
-  </section>
+<header>
+  <h1>Andy Baba Shop</h1>
+  <nav>
+    <a href="#">Home</a>
+    <a href="#products">Products</a>
+    <a href="#cart">Cart</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
 
-  <!-- Payment Section -->
-  <div class="upi">
-    <h2>Pay via UPI</h2>
-    <p>UPI ID: <strong>7205289617@jio</strong></p>
-    <img src="qr.png" alt="Scan QR to Pay">
-    
-    <!-- Quick Pay Button -->
-    <p><a href="upi://pay?pa=7205289617@jio&pn=AndyBabaShop&cu=INR" style="text-decoration:none;">
-      <button>Pay Now</button>
-    </a></p>
-
-    <!-- Dynamic Payment Form -->
-    <p>Or enter amount:</p>
-    <input type="number" id="amount" placeholder="Enter amount in ₹" required>
-    <button onclick="payNow()">Pay</button>
+<!-- Product Grid -->
+<section id="products" class="products">
+  <div class="card">
+    <img src="book1.jpg" alt="Book">
+    <h3>Book Collection</h3>
+    <p class="price">₹199</p>
+    <button class="btn" onclick="addToCart('Book Collection',199)">Add to Cart</button>
+    <button class="btn" onclick="payProduct(199,'Book Collection')">Buy Now</button>
   </div>
+  <div class="card">
+    <img src="painting1.jpg" alt="Painting">
+    <h3>Painting</h3>
+    <p class="price">₹499</p>
+    <button class="btn" onclick="addToCart('Painting',499)">Add to Cart</button>
+    <button class="btn" onclick="payProduct(499,'Painting')">Buy Now</button>
+  </div>
+  <div class="card">
+    <img src="notes.jpg" alt="Notes">
+    <h3>eNotes</h3>
+    <p class="price">₹99</p>
+    <button class="btn" onclick="addToCart('eNotes',99)">Add to Cart</button>
+    <button class="btn" onclick="payProduct(99,'eNotes')">Buy Now</button>
+  </div>
+  <div class="card">
+    <img src="article.jpg" alt="Article">
+    <h3>Article</h3>
+    <p class="price">₹49</p>
+    <button class="btn" onclick="addToCart('Article',49)">Add to Cart</button>
+    <button class="btn" onclick="payProduct(49,'Article')">Buy Now</button>
+  </div>
+</section>
 
-  <footer>
-    <p>📧 Email: a1rautaray@gmail.com | 📞 Phone: 7205289617</p>
-    <p>© 2025 Andy Baba Shop</p>
-  </footer>
+<!-- Cart Section -->
+<div id="cart" class="cart">
+  <h2>Your Cart</h2>
+  <ul id="cart-items"></ul>
+  <h3>Total: ₹<span id="total">0</span></h3>
+  <button class="btn" onclick="payCart()">Checkout</button>
+</div>
 
-  <script>
-    function payNow() {
-      let amount = document.getElementById("amount").value;
-      if (!amount || amount <= 0) {
-        alert("Please enter a valid amount");
-        return;
-      }
-      let url = "upi://pay?pa=7205289617@jio&pn=AndyBabaShop&cu=INR&am=" + amount;
-      window.location.href = url;
-    }
-  </script>
+<!-- Payment Section -->
+<div class="upi">
+  <h2>Checkout via UPI</h2>
+  <p>UPI ID: <strong>7205289617@jio</strong></p>
+  <p>If payment doesn’t open automatically, scan QR below:</p>
+  <img src="qr.png" alt="Scan QR to Pay">
+</div>
+
+<footer id="contact">
+  <p>📧 Email: a1rautaray@gmail.com | 📞 Phone: 7205289617</p>
+  <p>© 2025 Andy Baba Shop</p>
+</footer>
+
+<script>
+  let cart = [];
+  let total = 0;
+
+  function addToCart(item, price) {
+    cart.push({item, price});
+    total += price;
+    updateCart();
+  }
+
+  function updateCart() {
+    let list = document.getElementById("cart-items");
+    list.innerHTML = "";
+    cart.forEach(c => {
+      let li = document.createElement("li");
+      li.textContent = c.item + " - ₹" + c.price;
+      list.appendChild(li);
+    });
+    document.getElementById("total").textContent = total;
+  }
+
+  function payCart() {
+    if (total === 0) { alert("Your cart is empty!"); return; }
+    let url = "upi://pay?pa=7205289617@jio&pn=AndyBabaShop&cu=INR&am=" + total;
+    window.location.href = url;
+  }
+
+  function payProduct(amount, name) {
+    let url = "upi://pay?pa=7205289617@jio&pn=AndyBabaShop&cu=INR&am=" + amount + "&tn=" + encodeURIComponent(name);
+    window.location.href = url;
+  }
+</script>
+
 </body>
 </html>
