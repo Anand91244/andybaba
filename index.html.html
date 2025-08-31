@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Andy Baba - Online Shop</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 0; padding: 0; }
+    header { background: #333; color: white; padding: 20px; text-align: center; }
+    h1 { margin: 0; }
+    .container { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; padding: 20px; }
+    .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; }
+    .card h2 { margin-top: 0; }
+    .price { font-size: 18px; margin: 10px 0; color: #333; }
+    button, a button { background: #4CAF50; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 16px; }
+    button:hover { background: #45a049; }
+    footer { text-align: center; padding: 20px; margin-top: 30px; background: #eee; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Welcome to Andy Baba Shop</h1>
+    <p>Books • Paintings • Online e-Notes • And More</p>
+  </header>
+
+  <div class="container">
+    <!-- Product 1 -->
+    <div class="card">
+      <h2>Books</h2>
+      <p class="price">₹500</p>
+      <a href="upi://pay?pa=7205289617@jio&pn=AndyBabaBooks&am=500&cu=INR">
+        <button>Pay with UPI</button>
+      </a>
+    </div>
+
+    <!-- Product 2 -->
+    <div class="card">
+      <h2>Paintings</h2>
+      <p class="price">₹1500</p>
+      <a href="upi://pay?pa=7205289617@jio&pn=AndyBabaPaintings&am=1500&cu=INR">
+        <button>Pay with UPI</button>
+      </a>
+    </div>
+
+    <!-- Product 3 -->
+    <div class="card">
+      <h2>Online e-Notes</h2>
+      <p class="price">₹300</p>
+      <a href="upi://pay?pa=7205289617@jio&pn=AndyBabaENotes&am=300&cu=INR">
+        <button>Pay with UPI</button>
+      </a>
+    </div>
+
+    <!-- Product 4 -->
+    <div class="card">
+      <h2>Custom Order</h2>
+      <p class="price">Flexible Pricing</p>
+      <a href="upi://pay?pa=7205289617@jio&pn=AndyBabaCustom&cu=INR">
+        <button>Pay with UPI</button>
+      </a>
+    </div>
+  </div>
+
+  <footer>
+    <p><b>Return Policy:</b> For returns & refunds, contact us at 
+       <a href="mailto:a1rautaray@gmail.com">a1rautaray@gmail.com</a> 
+       or call <a href="tel:7205289617">7205289617</a>.</p>
+    <p>&copy; 2025 Andy Baba Shop</p>
+  </footer>
+</body>
+</html>
